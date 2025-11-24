@@ -1,0 +1,1 @@
+Je to dashboard pro vyuku HTML, CSS a JS v hodinach webu.
