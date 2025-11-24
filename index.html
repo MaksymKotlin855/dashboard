@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Osobní dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="dashboard" class="grid"></main>
+
+  <script>
+    const widgets = [
+      {name: 'ahoj', width: 'third'},
+      {name: 'ahoj', width: 'third'},
+      {name: 'ahoj', width: 'third'},
+    ];
+
+    async function loadWidgets() {
+      const container = document.getElementById('dashboard');
+      for (const widgetConfig of widgets) {
+
+        const widgetName = widgetConfig.name;
+        const widgetWidth = widgetConfig.width;
+        
+
+        const res = await fetch(`widgets/${widgetName}.html`);
+        const html = await res.text();
+
+
+        const widgetWrapper = document.createElement('div');
+        widgetWrapper.className = 'widget';
+        
+
+        if (widgetWidth) {
+          widgetWrapper.classList.add(widgetWidth);
+        }
+        
+        widgetWrapper.innerHTML = html;
+        container.appendChild(widgetWrapper);
+        
+
+        const scripts = widgetWrapper.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          newScript.textContent = oldScript.textContent;
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+      }
+    }
+    loadWidgets();
+  </script>
+</body>
+</html>
