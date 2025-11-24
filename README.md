@@ -4,5 +4,5 @@
 Je to dashboard pro vyuku HTML, CSS a JS v hodinach webu.
 
 ## Funkce
-- zobrazeni pozdravu
-- zobrazeni casu 
+- zobrazeni pozdravu.
+- zobrazeni casu.
