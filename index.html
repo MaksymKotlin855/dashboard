@@ -11,27 +11,25 @@
 
   <script>
     const widgets = [
-      {name: 'ahoj', width: 'third'},
-      {name: 'ahoj', width: 'third'},
-      {name: 'ahoj', width: 'third'},
+      { name: 'header', width: 'full' },
+      { name: 'clock', width: 'third' },
+      { name: 'date', width: 'half' },
+      { name: 'weather', width: 'third' },
+      { name: 'calculator', width: 'third' }
     ];
 
     async function loadWidgets() {
       const container = document.getElementById('dashboard');
       for (const widgetConfig of widgets) {
-
         const widgetName = widgetConfig.name;
         const widgetWidth = widgetConfig.width;
         
-
         const res = await fetch(`widgets/${widgetName}.html`);
         const html = await res.text();
-
 
         const widgetWrapper = document.createElement('div');
         widgetWrapper.className = 'widget';
         
-
         if (widgetWidth) {
           widgetWrapper.classList.add(widgetWidth);
         }
@@ -39,7 +37,6 @@
         widgetWrapper.innerHTML = html;
         container.appendChild(widgetWrapper);
         
-
         const scripts = widgetWrapper.querySelectorAll('script');
         scripts.forEach(oldScript => {
           const newScript = document.createElement('script');
@@ -49,8 +46,6 @@
       }
     }
     loadWidgets();
-  
   </script>
-  <p>Ahoj</p>
 </body>
 </html>

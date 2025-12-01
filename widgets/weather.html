@@ -1,0 +1,71 @@
+<div class="weather-widget">
+    <div class="weather-city" id="weather-city-uh">Načítám...</div>
+    <div class="weather-temp" id="weather-temp-uh">--°C</div>
+    <div class="weather-desc" id="weather-desc-uh">Načítám...</div>
+
+    <script>
+        
+        (function () {
+           
+            const tempEl = document.getElementById('weather-temp-uh');
+            const descEl = document.getElementById('weather-desc-uh');
+            const cityEl = document.getElementById('weather-city-uh');
+
+        
+            if (!tempEl || !cityEl) return; 
+
+      
+            const lat = 49.073;
+            const long = 17.464;
+            
+      
+            function getWeatherDescription(code) {
+                if (code === 0) return 'Jasno';
+                if (code >= 1 && code <= 3) return 'Polojasno';
+                if (code >= 45 && code <= 48) return 'Mlha';
+                if (code >= 51 && code <= 67) return 'Déšť';
+                if (code >= 71 && code <= 77) return 'Sníh';
+                if (code >= 95) return 'Bouřka';
+                return 'Neznámé';
+            }
+
+
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current_weather=true`;
+            fetch(weatherUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const temp = data.current_weather.temperature;
+                    const code = data.current_weather.weathercode;
+                    tempEl.textContent = `${temp}°C`;
+                    descEl.textContent = getWeatherDescription(code);
+                })
+                .catch(error => {
+                    console.error('Chyba při získávání počasí:', error);
+                    descEl.textContent = 'Chyba API';
+                });
+
+
+            const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${long}&localityLanguage=cs`;
+            fetch(geoUrl)
+                .then(response => response.json())
+                .then(data => {
+                    cityEl.textContent = data.city || data.locality || 'Neznámé místo';
+                })
+                .catch(error => {
+                    console.error('Chyba při získávání města:', error);
+                    cityEl.textContent = 'Město neznámé';
+                });
+
+        })();
+    </script>
+</div>
+
+<style>
+
+.weather-widget {
+    font-weight: bold;
+    width: 100%; 
+    text-align: center;
+}
+
+</style>
