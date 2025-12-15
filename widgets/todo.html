@@ -1,0 +1,155 @@
+
+    <style>
+        .todo-widget {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        /* Styly z návodu */
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+        }
+        .input-group button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.2; /* Pro lepší zarovnání */
+        }
+        .input-group button:hover {
+            background-color: #45a049;
+        }
+
+        .todo-widget ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .todo-widget li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .todo-item-content {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-grow: 1;
+        }
+        
+        .completed span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+
+
+<script>
+    // 4. Funkce todoWidget, která vrací stav a metody
+    function todoWidget() {
+        return {
+            // Inicializace stavu
+            newTodo: '',
+            todos: [],
+
+            // Inicializace (Init)
+            init() {
+                // Načtení úkolů z localStorage
+                this.todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                
+                // Sledování změn v poli 'todos' a automatické ukládání do localStorage (Alpine.js $watch)
+                this.$watch('todos', (value) => {
+                    localStorage.setItem('todos', JSON.stringify(value));
+                });
+            },
+
+            // Přidání úkolu (Add)
+            add() {
+                // Zkontrolovat, zda není vstup prázdný nebo jen mezery
+                if (this.newTodo.trim() === '') return;
+
+                // Přidá nový objekt úkolu do pole todos s aktuálním časem jako ID
+                this.todos.push({
+                    id: Date.now(),
+                    text: this.newTodo.trim(),
+                    completed: false
+                });
+
+                // Vymaže vstupní pole
+                this.newTodo = '';
+            },
+
+            // Odstranění úkolu (Remove)
+            remove(id) {
+                // Vyfiltruje pole a ponechá pouze úkoly, které nemají zadané ID
+                this.todos = this.todos.filter(todo => todo.id !== id);
+            }
+        }
+    }
+</script>
+
+
+<div class="todo-widget" x-data="todoWidget()" x-init="init()">
+    <h3>Úkoly</h3>
+
+    <div class="input-group">
+        <input 
+            type="text" 
+            x-model="newTodo" 
+            @keyup.enter="add()" 
+            placeholder="Nový úkol..."
+        >
+        <button @click="add()">+</button>
+    </div>
+
+    <ul x-cloak>
+        <template x-for="todo in todos" :key="todo.id">
+            <li :class="{'completed': todo.completed}">
+                <div class="todo-item-content">
+                    <input type="checkbox" x-model="todo.completed">
+                    <span x-text="todo.text"></span>
+                </div>
+                <button @click="remove(todo.id)" class="delete-btn">&times;</button>
+            </li>
+        </template>
+        <template x-if="todos.length === 0">
+            <li>Nemáte žádné úkoly.</li>
+        </template>
+    </ul>
+    
+</div>
+
+
+</html>
