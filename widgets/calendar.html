@@ -1,0 +1,238 @@
+<div x-data="calendarWidget()" class="calendar-widget-container">
+    <style>
+        /* Lokální reset a stylování pro zamezení konfliktům */
+        .calendar-widget-container {
+            color: #fff;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ff9800;
+        }
+        .nav-buttons { display: flex; gap: 5px; }
+        .nav-btn {
+            background: #2a2a2a;
+            border: none;
+            color: #ff9800;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .nav-btn:hover { background: #ff9800; color: #000; }
+
+        /* KLÍČOVÁ OPRAVA: Vynucení mřížky */
+        .calendar-grid-custom {
+            display: grid !important;
+            grid-template-columns: repeat(7, 1fr) !important;
+            gap: 5px;
+            text-align: center;
+        }
+        .day-label {
+            font-size: 0.75rem;
+            color: #888;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+        .day-cell {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            position: relative;
+            transition: 0.2s;
+            padding: 10px;
+        }
+        .day-cell:hover:not(.empty) { background: #333; transform: scale(1.05); }
+        .day-cell.empty { background: transparent; cursor: default; }
+        .day-cell.today { background: #ff9800; color: #000; font-weight: bold; }
+        
+        /* Indikátor události (tečka) */
+        .has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #ff9800;
+            border-radius: 50%;
+        }
+        .today.has-event::after { background: #000; }
+
+        /* Modal styling */
+        .calendar-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #333;
+        }
+        .event-input {
+            width: 100%;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .add-btn {
+            background: #ff9800;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="calendar-header">
+        <div class="calendar-title" x-text="monthName + ' ' + year"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" @click="previousMonth()">‹</button>
+            <button class="nav-btn" @click="nextMonth()">›</button>
+        </div>
+    </div>
+
+    <div class="calendar-grid-custom">
+        <template x-for="day in dayLabels">
+            <div class="day-label" x-text="day"></div>
+        </template>
+
+        <template x-for="(day, index) in calendarDays" :key="index">
+            <div class="day-cell"
+                 :class="{
+                    'empty': day === null,
+                    'today': day && isToday(day),
+                    'has-event': day && hasEvent(day)
+                 }"
+                 @click="day && openModal(day)"
+                 x-text="day || ''">
+            </div>
+        </template>
+    </div>
+
+    <div x-show="showModal" class="calendar-modal" x-cloak @click.self="closeModal()">
+        <div class="modal-content">
+            <h3 style="color: #ff9800" x-text="'Události: ' + selectedDay + '. ' + (month + 1) + '.'"></h3>
+            
+            <div style="margin: 15px 0; max-height: 200px; overflow-y: auto;">
+                <template x-for="(event, idx) in currentDayEvents" :key="idx">
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333;">
+                        <span x-text="event.time + ' ' + event.name"></span>
+                        <button @click="deleteEvent(idx)" style="color: #ff4444; background: none; border: none; cursor:pointer;">×</button>
+                    </div>
+                </template>
+            </div>
+
+            <input type="text" class="event-input" x-model="newEventName" placeholder="Název události">
+            <input type="time" class="event-input" x-model="newEventTime">
+            <button class="add-btn" @click="addEvent()">Přidat</button>
+            <button @click="closeModal()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Zavřít</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function calendarWidget() {
+    return {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
+        today: new Date(),
+        showModal: false,
+        selectedDay: null,
+        newEventName: '',
+        newEventTime: '',
+        events: {},
+        dayLabels: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+        monthNames: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'],
+
+        init() {
+            this.loadEvents();
+        },
+
+        get monthName() { return this.monthNames[this.month]; },
+
+        get calendarDays() {
+            const firstDay = new Date(this.year, this.month, 1);
+            const lastDay = new Date(this.year, this.month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            let firstDayOfWeek = firstDay.getDay();
+            firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+            const days = [];
+            for (let i = 0; i < firstDayOfWeek; i++) days.push(null);
+            for (let i = 1; i <= daysInMonth; i++) days.push(i);
+            return days;
+        },
+
+        get currentDayEvents() {
+            const key = this.getEventKey(this.selectedDay);
+            return this.events[key] || [];
+        },
+
+        getEventKey(day) {
+            return `${this.year}-${this.month + 1}-${day}`;
+        },
+
+        isToday(day) {
+            return day === this.today.getDate() && this.month === this.today.getMonth() && this.year === this.today.getFullYear();
+        },
+
+        hasEvent(day) {
+            return this.events[this.getEventKey(day)]?.length > 0;
+        },
+
+        previousMonth() { if (this.month === 0) { this.month = 11; this.year--; } else { this.month--; } },
+        nextMonth() { if (this.month === 11) { this.month = 0; this.year++; } else { this.month++; } },
+
+        openModal(day) { this.selectedDay = day; this.showModal = true; },
+        closeModal() { this.showModal = false; },
+
+        addEvent() {
+            if (!this.newEventName || !this.newEventTime) return;
+            const key = this.getEventKey(this.selectedDay);
+            if (!this.events[key]) this.events[key] = [];
+            this.events[key].push({ name: this.newEventName, time: this.newEventTime });
+            this.events[key].sort((a,b) => a.time.localeCompare(b.time));
+            this.saveEvents();
+            this.newEventName = ''; this.newEventTime = '';
+        },
+
+        deleteEvent(idx) {
+            const key = this.getEventKey(this.selectedDay);
+            this.events[key].splice(idx, 1);
+            this.saveEvents();
+        },
+
+        saveEvents() { localStorage.setItem('dashboard_events', JSON.stringify(this.events)); },
+        loadEvents() { 
+            const stored = localStorage.getItem('dashboard_events');
+            this.events = stored ? JSON.parse(stored) : {};
+        }
+    }
+}
+</script>
