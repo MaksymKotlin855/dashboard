@@ -1,6 +1,5 @@
 <div x-data="calendarWidget()" class="calendar-widget-container">
     <style>
-        /* Lokální reset a stylování pro zamezení konfliktům */
         .calendar-widget-container {
             color: #fff;
             width: 100%;
@@ -32,7 +31,7 @@
         }
         .nav-btn:hover { background: rgba(34, 197, 94, 0.886); color: #000; }
 
-        /* KLÍČOVÁ OPRAVA: Vynucení mřížky */
+       
         .calendar-grid-custom {
             display: grid !important;
             grid-template-columns: repeat(7, 1fr) !important;
@@ -62,7 +61,7 @@
         .day-cell.empty { background: transparent; cursor: default; }
         .day-cell.today { background: rgba(34, 197, 94, 0.886); color: #000; font-weight: bold; }
         
-        /* Indikátor události (tečka) */
+        
         .has-event::after {
             content: '';
             position: absolute;
@@ -74,7 +73,7 @@
         }
         .today.has-event::after { background: #000; }
 
-        /* Modal styling */
+       
         .calendar-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
