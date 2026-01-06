@@ -6,33 +6,98 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #000000;
-  padding: 2rem;
+  background: linear-gradient(135deg, #0a0a0a 0%, #0f0f0f 100%);
+  padding: 3rem 2rem;
   min-height: 100vh;
   color: #ffffff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(34, 197, 94, 0.02) 0%, transparent 50%);
+  animation: rotate 40s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 #dashboard.grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
+  gap: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .widget {
-  background: rgb(14, 14, 14);
-  border-radius: 10px;
-  border: 3px solid #ff9500;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(145deg, rgba(18, 18, 18, 0.95), rgba(12, 12, 12, 0.98));
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 2px solid rgba(34, 197, 94, 0.25);
+  padding: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(34, 197, 94, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.04), transparent);
+  transition: left 0.8s ease;
+}
+
+.widget:hover::before {
+  left: 100%;
 }
 
 .widget:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(34, 197, 94, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(34, 197, 94, 0.4);
+  background: linear-gradient(145deg, rgba(20, 20, 20, 0.95), rgba(14, 14, 14, 0.98));
+}
+
+.widget::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.03) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.widget:hover::after {
+  opacity: 1;
 }
 
 .widget.full {
@@ -45,4 +110,46 @@ body {
 
 .widget.third {
   grid-column: span 3;
+}
+
+/* Дополнительные элементы для премиальности */
+.widget h2, .widget h3 {
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+}
+
+.widget p {
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .widget.half {
+    grid-column: span 12;
+  }
+  .widget.third {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 1.5rem 1rem;
+  }
+  
+  #dashboard.grid {
+    gap: 1.5rem;
+  }
+  
+  .widget.third {
+    grid-column: span 12;
+  }
+  
+  .widget {
+    padding: 1.5rem;
+  }
 }

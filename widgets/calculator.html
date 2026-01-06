@@ -46,31 +46,130 @@
 
 <style>
     .simple-calc {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px; 
-    max-width: 200px; 
-}
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        max-width: 300px;
+        width: 100%;
+    }
 
-#calc-input {
-    border-radius: 5px;
-    grid-column: span 4;
-    text-align: right;
-    padding: 4px;
-}
+    #calc-input {
+        grid-column: span 4;
+        text-align: right;
+        padding: 1.2rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 12px;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
 
-.simple-calc .clear {
-    grid-column: span 4; 
-}
+    #calc-input:focus {
+        outline: none;
+        border-color: rgba(34, 197, 94, 0.4);
+        box-shadow: 
+            inset 0 2px 8px rgba(0, 0, 0, 0.3),
+            0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
 
-.simple-calc button {
-    padding: 8px; 
-    cursor: pointer; 
-}
+    .simple-calc button {
+        padding: 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        color: #ffffff;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 
+            0 2px 8px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
 
-.widget:has(.simple-calc) {
-    display: flex; 
-    justify-content: center;
-    align-items: center;
-}
+    .simple-calc button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(34, 197, 94, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.4s, height 0.4s;
+    }
+
+    .simple-calc button:hover::before {
+        width: 200px;
+        height: 200px;
+    }
+
+    .simple-calc button:hover {
+        transform: translateY(-2px);
+        border-color: rgba(34, 197, 94, 0.3);
+        box-shadow: 
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(34, 197, 94, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .simple-calc button:active {
+        transform: translateY(0);
+        box-shadow: 
+            0 1px 4px rgba(0, 0, 0, 0.4),
+            inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .simple-calc button.op {
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.25), rgba(34, 197, 94, 0.15));
+        border-color: rgba(34, 197, 94, 0.3);
+        color: rgba(34, 197, 94, 0.886);
+        font-weight: 600;
+    }
+
+    .simple-calc button.op:hover {
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.35), rgba(34, 197, 94, 0.25));
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 
+            0 4px 12px rgba(34, 197, 94, 0.2),
+            0 0 20px rgba(34, 197, 94, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .simple-calc .clear {
+        grid-column: span 4;
+        background: linear-gradient(145deg, rgba(220, 38, 38, 0.25), rgba(185, 28, 28, 0.15));
+        border-color: rgba(220, 38, 38, 0.3);
+        color: rgba(239, 68, 68, 0.9);
+        font-weight: 600;
+    }
+
+    .simple-calc .clear:hover {
+        background: linear-gradient(145deg, rgba(220, 38, 38, 0.35), rgba(185, 28, 28, 0.25));
+        border-color: rgba(220, 38, 38, 0.5);
+        box-shadow: 
+            0 4px 12px rgba(220, 38, 38, 0.2),
+            0 0 20px rgba(220, 38, 38, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .widget:has(.simple-calc) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media (max-width: 640px) {
+        .simple-calc {
+            max-width: 100%;
+        }
+    }
 </style>
