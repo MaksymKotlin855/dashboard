@@ -112,7 +112,7 @@ body::before {
   grid-column: span 3;
 }
 
-/* Дополнительные элементы для премиальности */
+
 .widget h2, .widget h3 {
   color: #ffffff;
   font-weight: 600;
@@ -126,7 +126,7 @@ body::before {
   line-height: 1.6;
 }
 
-/* Адаптивность */
+
 @media (max-width: 1024px) {
   .widget.half {
     grid-column: span 12;
