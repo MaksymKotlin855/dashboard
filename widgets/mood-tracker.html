@@ -1,0 +1,166 @@
+<div class="mood-widget" x-data="moodTracker()" x-init="init()">
+    <div class="mood-header">
+        <h3 class="mood-title">Mood Tracker</h3>
+        <input type="date" x-model="selectedDate" @change="loadMoodForDate()" class="mood-date-picker">
+    </div>
+
+    <div class="mood-question">Jak se dnes cítíš?</div>
+
+    <div class="mood-options">
+        <template x-for="m in moodTypes" :key="m.label">
+            <button @click="saveMood(m.emoji)" 
+                    :class="{'active': currentMood === m.emoji}"
+                    class="mood-btn" 
+                    :title="m.label">
+                <span x-text="m.emoji"></span>
+            </button>
+        </template>
+    </div>
+
+    <div class="mood-history">
+        <div class="history-title">Posledních 7 dní</div>
+        <div class="history-grid">
+            <template x-for="day in lastWeek" :key="day.date">
+                <div class="history-item">
+                    <span class="history-date" x-text="day.label"></span>
+                    <div class="history-emoji" :class="{'empty': !history[day.date]}" 
+                         x-text="history[day.date] || '•'"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+
+<style>
+    .mood-widget {
+        color: #fff;
+        padding: 15px;
+    }
+    .mood-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .mood-title { color: #2ecc71; margin: 0; font-size: 1.1rem; }
+    
+    .mood-date-picker {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        color: #fff;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .mood-question {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        color: #ccc;
+    }
+
+    .mood-options {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
+
+    .mood-btn {
+        background: #1e1e1e;
+        border: 2px solid #333;
+        font-size: 1.5rem;
+        padding: 8px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        width: 50px;
+    }
+
+    .mood-btn:hover { border-color: #2ecc71; transform: translateY(-3px); }
+    .mood-btn.active { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
+
+    .mood-history {
+        border-top: 1px solid #333;
+        padding-top: 15px;
+    }
+
+    .history-title {
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .history-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        text-align: center;
+    }
+
+    .history-item { display: flex; flex-direction: column; gap: 5px; }
+    .history-date { font-size: 0.65rem; color: #666; }
+    .history-emoji {
+        font-size: 1.1rem;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .history-emoji.empty { color: #333; }
+</style>
+
+<script>
+    function moodTracker() {
+    return {
+        selectedDate: new Date().toISOString().split('T')[0],
+        currentMood: null,
+        history: {},
+        moodTypes: [
+            { emoji: '😄', label: 'Skvěle' },
+            { emoji: '🙂', label: 'Dobře' },
+            { emoji: '😐', label: 'Ujde to' },
+            { emoji: '😕', label: 'Špatně' },
+            { emoji: '😡', label: 'Naštvaně' }
+        ],
+        lastWeek: [],
+
+        init() {
+            this.loadHistory();
+            this.generateLastWeekLabels();
+            this.loadMoodForDate();
+        },
+
+        generateLastWeekLabels() {
+            const days = [];
+            const dayNames = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                days.push({
+                    date: dateStr,
+                    label: i === 0 ? 'Dnes' : dayNames[d.getDay()]
+                });
+            }
+            this.lastWeek = days;
+        },
+
+        saveMood(emoji) {
+            this.currentMood = emoji;
+            this.history[this.selectedDate] = emoji;
+            localStorage.setItem('dashboard_moods', JSON.stringify(this.history));
+        },
+
+        loadMoodForDate() {
+            this.currentMood = this.history[this.selectedDate] || null;
+        },
+
+        loadHistory() {
+            const stored = localStorage.getItem('dashboard_moods');
+            this.history = stored ? JSON.parse(stored) : {};
+        }
+    }
+}
+</script>
