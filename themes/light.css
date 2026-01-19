@@ -1,0 +1,11 @@
+:root {
+    --bg-color: #f5f5f5;
+    --bg-gradient: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    --widget-bg: rgba(255, 255, 255, 0.9);
+    --accent-color: rgba(9, 10, 9, 0.747);
+    --accent-hover: rgba(9, 10, 9, 0.9);
+    --accent-glow: rgba(9, 10, 9, 0.05);
+    --text-main: #1a1a1a;
+    --text-muted: #666666;
+    --border-color: rgba(0, 0, 0, 0.1);
+}

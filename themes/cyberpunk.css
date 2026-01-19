@@ -1,0 +1,33 @@
+:root {
+  --bg-color: #000000;
+  --bg-gradient: linear-gradient(
+    135deg,
+    #000000 0%,
+    #12001f 30%,
+    #2b0057 65%,
+    #000000 100%
+  );
+
+  --text-main: #f0f;
+  --text-muted: #0ff;
+
+  --widget-bg: rgba(0, 20, 60, 0.6);
+
+  --accent-color: #ff00ff;
+  --accent-hover: #39ff14;
+
+  --accent-glow: rgba(255, 0, 255, 0.35);
+
+  --border-color: rgba(255, 0, 255, 0.25);
+}
+
+.widget {
+  border-color: var(--accent-color);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 18px rgba(255, 0, 255, 0.45),
+    0 0 28px rgba(57, 255, 20, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: cyberpunk-hue 14s linear infinite;
+  will-change: filter;
+}
