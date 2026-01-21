@@ -34,6 +34,7 @@ body::before {
 }
 
 #dashboard.grid {
+
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 2rem;
@@ -41,6 +42,13 @@ body::before {
   margin: 0 auto;
   position: relative;
   z-index: 1;
+}
+
+@media(max-width: 1000px) {
+  #dashboard.grid {
+    display: block;
+    padding-top: 10px;
+  }
 }
 
 .widget {
